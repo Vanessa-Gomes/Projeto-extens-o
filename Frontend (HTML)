@@ -1,0 +1,51 @@
+Frontend (HTML)
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Restaurante</title>
+</head>
+<body>
+    <h1>Menu do Restaurante</h1>
+    <div id="menu"></div>
+
+    <h2>Fazer Pedido</h2>
+    <input type="number" id="item_id" placeholder="ID do Item" />
+    <input type="number" id="quantidade" placeholder="Quantidade" />
+    <button onclick="fazerPedido()">Fazer Pedido</button>
+
+    <script>
+        async function carregarMenu() {
+            const response = await fetch('/menu');
+            const menu = await response.json();
+            const menuDiv = document.getElementById('menu');
+            menuDiv.innerHTML = '';
+            for (let id in menu) {
+                menuDiv.innerHTML += `<p>${menu[id].nome} - R$${menu[id].preco.toFixed(2)} (ID: ${id})</p>`;
+            }
+        }
+
+        async function fazerPedido() {
+            const itemId = document.getElementById('item_id').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            const response = await fetch('/pedido', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ item_id: parseInt(itemId), quantidade: parseInt(quantidade) })
+            });
+
+            const data = await response.json();
+            alert(data.mensagem);
+        }
+
+        // Carrega o menu ao iniciar
+        carregarMenu();
+    </script>
+</body>
+</html>
+
