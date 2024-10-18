@@ -1,0 +1,37 @@
+Backend (Flask)
+
+
+app = Flask(__name__)
+
+# Exemplo de menu
+menu = {
+    1: {"nome": "Pizza Margherita", "preco": 25.00},
+    2: {"nome": "Hambúrguer", "preco": 20.00},
+    3: {"nome": "Salada Caesar", "preco": 15.00},
+}
+
+pedidos = []
+
+@app.route('/menu', methods=['GET'])
+def get_menu():
+    return jsonify(menu)
+
+@app.route('/pedido', methods=['POST'])
+def fazer_pedido():
+    item_id = request.json.get('item_id')
+    quantidade = request.json.get('quantidade')
+
+    if item_id in menu:
+        pedidos.append({
+            "item": menu[item_id],
+            "quantidade": quantidade
+        })
+        return jsonify({"mensagem": "Pedido feito com sucesso!"}), 201
+    return jsonify({"mensagem": "Item não encontrado!"}), 404
+
+@app.route('/pedidos', methods=['GET'])
+def ver_pedidos():
+    return jsonify(pedidos)
+
+if __name__ == '__main__':
+    app.run(debug=True)
